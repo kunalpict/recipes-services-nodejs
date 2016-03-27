@@ -1,0 +1,18 @@
+var mysql = require('mysql');
+var mysqlConfig = function(){
+	
+	function createConnection() {
+		var connection = mysql.createConnection({
+  			host : 'east-db-instance.ca4lzantlfoq.us-east-1.rds.amazonaws.com',
+  			user : 'kunal',
+  			password : 'Priyap277',
+  			database : 'study'});
+		return connection;
+	}
+
+	return {
+		create  : createConnection
+	};
+};
+
+module.exports = mysqlConfig();

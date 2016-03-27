@@ -1,0 +1,14 @@
+doctype html
+block vars
+  - ngApp = appName
+  - ngConroller = bodyController
+html(ng-app="#{ngApp}")
+  head
+    link(rel='stylesheet', href='/_generate/css/result.css')
+    script(src='http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.js')
+    script(src='/_generate/js/output.min.js')  
+    include ../components/localStorage.jade
+
+      
+  body(ng-controller="#{bodyController}")
+    block content
