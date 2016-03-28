@@ -27,9 +27,9 @@ app.use('/static',express.static(path.join(__dirname, 'public')));
 app.use('/_generate',express.static(path.join(__dirname, '_generate')));
 
 
-app.use('/api', init);
-app.use('/api', users);
-app.use('/api', recipe);
+app.use('/ws', init);
+app.use('/ws', users);
+app.use('/ws', recipe);
 //app.use('/api', upload);
 
 // catch 404 and forward to error handler
