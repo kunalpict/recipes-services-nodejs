@@ -16,19 +16,20 @@ router.post('/recipe/new', function(req, res, next) {
   console.log(JSON.stringify(req.body.procedure));
     var connection = mysqlConfig.create(); 
       connection.connect();
-      connection.query('INSERT INTO study.recipes (id,name,user,category) values (?,?,?,?)',
-        [id,req.body.name,req.body.user,req.body.category ],
+      connection.query('INSERT INTO study.recipes (id,title,category,user,cook_time,date,description,image) values (?,?,?,?,?,?,?,?)',
+        [id,req.body.title,req.body.category,req.body.user,req.body.cook_time,
+        req.body.date,req.body.desc,req.body.image],
         function(err, results) 
       {
         if (err) throw err;
       });
 
-      connection.query('INSERT INTO study.ingredients (id, ingredient) values (?,?)',
-        [id, JSON.stringify(req.body.ingredient)],
-        function(err, results) 
-      {
-        if (err) throw err;
-      });
+      // connection.query('INSERT INTO study.ingredients (id, ingredient) values (?,?)',
+      //   [id, JSON.stringify(req.body.ingredient)],
+      //   function(err, results) 
+      // {
+      //   if (err) throw err;
+      // });
 
 /*      var sql = connection.query('INSERT INTO study.procedures (id, procedure) values (?,?)',
         [id, JSON.stringify(req.body.procedure)],
@@ -45,43 +46,38 @@ router.post('/recipe/new', function(req, res, next) {
 });
 
 router.get('/recipe/:id', function(req, res, next) {
-    redisClient.client.getAsync(req.params.id)
+   /* redisClient.client.getAsync(req.params.id)
     .then(function(data) {
       if (data) {
         console.log(data);
         res.json(JSON.parse(data));
       } else 
-      { 
+      {*/ 
         var connection = mysqlConfig.create(); 
         connection.connect();
-        connection.query('SELECT * FROM study.recipes as a join study.ingredients as b where a.id = b.id and a.id = ?',
+        connection.query('SELECT * FROM study.recipes where id = ?',
         [req.params.id],  
         function(err, rows, fields) {
           
-          if (err) throw err;
-          rows.forEach( function(element, index) {
-            element.ingredient = JSON.parse(element.ingredient);
+          if (err) console.log(err);
+         /* rows.forEach( function(element, index) {
+            //element.ingredient = JSON.parse(element.ingredient);
             //element.procedure = JSON.parse(element.procedure);
-          });
+          });*/
           res.json(rows);
-          redisClient.client.set(req.params.id, JSON.stringify(rows));
-          redisClient.client.expire(req.params.id, 30);
+          //redisClient.client.set(req.params.id, JSON.stringify(rows));
+         // redisClient.client.expire(req.params.id, 30);
           connection.end();
         });
-      }
-     });
+      /*}
+     });*/
 });
 
 router.get('/recipes', function(req, res, next) {
     var connection = mysqlConfig.create(); 
     connection.connect();
-    connection.query('SELECT * FROM study.recipes as a join study.ingredients as b where a.id=b.id', function(err, rows, fields) {
-    if (err) throw err;
-      rows.forEach( function(element, index) {
-        element.ingredient = JSON.parse(element.ingredient);
-        //element.procedure = JSON.parse(element.procedure);
-      });
-      
+    connection.query('SELECT * FROM study.recipes', function(err, rows, fields) {
+    if (err) console.log(err);
       res.cookie('name', 'tobi', { domain: 'localhost', path: '/api/init', secure: true });
       res.cookie('rememberme', '1', { expires: new Date(Date.now() + 900000), httpOnly: true });
       res.json(rows);
