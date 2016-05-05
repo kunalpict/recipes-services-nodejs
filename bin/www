@@ -13,7 +13,7 @@ var http = require('http');
  */
 
 console.log('process.env.PORT :'+JSON.stringify(process.env.PORT));
-var port = normalizePort(process.env.PORT || '3100');
+var port = normalizePort('80');
 app.set('port', port);
 
 /**
