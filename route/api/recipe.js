@@ -28,7 +28,7 @@ router.post('/recipe/new', function(req, res, next) {
 
     var promise2 = new Promise(function(resolve, reject) {
         var ingredients = [];
-        for(var i = 0; i < req.body.ingredients.length; i++) {
+        for (var i = 0; i < req.body.ingredients.length; i++) {
             var row = [];
             row.push(id);
             row.push(req.body.ingredients[i].ingredient);
@@ -48,7 +48,7 @@ router.post('/recipe/new', function(req, res, next) {
 
     var promise3 = new Promise(function(resolve, reject) {
         var directions = [];
-        for(var i = 0; i < req.body.directions.length; i++) {
+        for (var i = 0; i < req.body.directions.length; i++) {
             var row = [];
             row.push(id);
             row.push(req.body.directions[i].direction);
@@ -78,7 +78,6 @@ router.get('/recipe/:id', function(req, res, next) {
         connection.connect();
         connection.query('SELECT * FROM study.recipes where id = ?', [req.params.id],
             function(err, rows, fields) {
-
                 if (err) console.log(err);
                 resolve(rows);
                 connection.end();
@@ -90,7 +89,6 @@ router.get('/recipe/:id', function(req, res, next) {
         connection.connect();
         connection.query('SELECT ingredient, qty FROM study.ingredients where id = ?', [req.params.id],
             function(err, rows, fields) {
-
                 if (err) console.log(err);
                 resolve(rows);
                 connection.end();
@@ -103,7 +101,6 @@ router.get('/recipe/:id', function(req, res, next) {
         connection.connect();
         connection.query('SELECT * FROM study.procedures where id = ? order by step;', [req.params.id],
             function(err, rows, fields) {
-
                 if (err) console.log(err);
                 resolve(rows);
                 connection.end();
@@ -113,8 +110,6 @@ router.get('/recipe/:id', function(req, res, next) {
 
     Promise.all([promise1, promise2, promise3])
         .then(function(resolve) {
-            console.log(resolve[0]);
-
             var jsonResponse = {
                 info: resolve[0][0],
                 ingredients: resolve[1],
