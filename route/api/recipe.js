@@ -13,36 +13,63 @@ router.get('/init', function(req, res, next) {
 
 router.post('/recipe/new', function(req, res, next) {
     var id = uuid.v4();
-    console.log(JSON.stringify(req.body.procedure));
-    var connection = mysqlConfig.create();
-    connection.connect();
-    connection.query('INSERT INTO study.recipes (id,title,category,user,cook_time,date,description,image) values (?,?,?,?,?,?,?,?)', [id, req.body.title, req.body.category, req.body.user, req.body.cook_time,
-            req.body.date, req.body.desc, req.body.image
-        ],
-        function(err, results) {
-            if (err) throw err;
-        });
+    var promise1 = new Promise(function(resolve, reject) {
+        var connection = mysqlConfig.create();
+        connection.connect();
+        connection.query('INSERT INTO study.recipes (id,title,category,user,cook_time,date,description,image) values (?,?,?,?,?,?,?,?)', [id, req.body.info.title, req.body.info.category, req.body.info.user, req.body.info.cook_time,
+                req.body.info.date, req.body.info.desc, req.body.info.image
+            ],
+            function(err, results) {
+                if (err) throw err;
+                resolve(results);
+            });
+        connection.end();
+    });
 
-    // connection.query('INSERT INTO study.ingredients (id, ingredient) values (?,?)',
-    //   [id, JSON.stringify(req.body.ingredient)],
-    //   function(err, results) 
-    // {
-    //   if (err) throw err;
-    // });
+    var promise2 = new Promise(function(resolve, reject) {
+        var ingredients = [];
+        for(var i = 0; i < req.body.ingredients.length; i++) {
+            var row = [];
+            row.push(id);
+            row.push(req.body.ingredients[i].ingredient);
+            row.push(req.body.ingredients[i].qty);
+            ingredients.push(row);
+        }
+        var connection = mysqlConfig.create();
+        connection.connect();
+        connection.query('INSERT INTO study.ingredients (id, ingredient, qty) values ?', [ingredients],
+            function(err, results) {
+                if (err) throw err;
+                resolve(results);
+            });
+        connection.end();
+    });
 
-    /*      var sql = connection.query('INSERT INTO study.procedures (id, procedure) values (?,?)',
-            [id, JSON.stringify(req.body.procedure)],
-            function(err, results) 
-          {
-            if (err) throw err;
-          });
 
-          console.log(sql);
-    */
-    connection.end();
+    var promise3 = new Promise(function(resolve, reject) {
+        var directions = [];
+        for(var i = 0; i < req.body.directions.length; i++) {
+            var row = [];
+            row.push(id);
+            row.push(req.body.directions[i].direction);
+            row.push(req.body.directions[i].step);
+            directions.push(row);
+        }
 
+        var connection = mysqlConfig.create();
+        connection.connect();
+        var query = connection.query('INSERT INTO study.procedures (id, direction, step) values ?', [directions],
+            function(err, results) {
+                if (err) console.log(err);
+                resolve(results);
+            });
+        connection.end();
+    });
 
-    res.sendStatus(200)
+    Promise.all([promise1, promise2, promise3])
+        .then(function(resolve) {
+            res.sendStatus(200)
+        })
 });
 
 router.get('/recipe/:id', function(req, res, next) {
@@ -87,11 +114,11 @@ router.get('/recipe/:id', function(req, res, next) {
     Promise.all([promise1, promise2, promise3])
         .then(function(resolve) {
             console.log(resolve[0]);
-            
+
             var jsonResponse = {
-              info: resolve[0][0],
-              ingredients: resolve[1],
-              directions: resolve[2]
+                info: resolve[0][0],
+                ingredients: resolve[1],
+                directions: resolve[2]
             }
 
             res.json(jsonResponse);
