@@ -4,6 +4,8 @@ var uuid = require('uuid');
 var redisClient = require('../cache/redis-client');
 var router = express.Router();
 var mysqlConfig = require('../config/mysqlconfig');
+var getRecipe = require('../recipe/getRecipe');
+var createRecipe = require('../recipe/createRecipe');
 /* GET home page. */
 router.get('/init', function(req, res, next) {
     console.log(req.cookies.rememberme);
@@ -13,111 +15,23 @@ router.get('/init', function(req, res, next) {
 
 router.post('/recipe/new', function(req, res, next) {
     var id = uuid.v4();
-    var promise1 = new Promise(function(resolve, reject) {
-        var connection = mysqlConfig.create();
-        connection.connect();
-        connection.query('INSERT INTO study.recipes (id,title,category,user,cook_time,date,description,image) values (?,?,?,?,?,?,?,?)', [id, req.body.info.title, req.body.info.category, req.body.info.user, req.body.info.cook_time,
-                req.body.info.date, req.body.info.desc, req.body.info.image
-            ],
-            function(err, results) {
-                if (err) throw err;
-                resolve(results);
-            });
-        connection.end();
-    });
-
-    var promise2 = new Promise(function(resolve, reject) {
-        var ingredients = [];
-        for (var i = 0; i < req.body.ingredients.length; i++) {
-            var row = [];
-            row.push(id);
-            row.push(req.body.ingredients[i].ingredient);
-            row.push(req.body.ingredients[i].qty);
-            ingredients.push(row);
-        }
-        var connection = mysqlConfig.create();
-        connection.connect();
-        connection.query('INSERT INTO study.ingredients (id, ingredient, qty) values ?', [ingredients],
-            function(err, results) {
-                if (err) throw err;
-                resolve(results);
-            });
-        connection.end();
-    });
-
-
-    var promise3 = new Promise(function(resolve, reject) {
-        var directions = [];
-        for (var i = 0; i < req.body.directions.length; i++) {
-            var row = [];
-            row.push(id);
-            row.push(req.body.directions[i].direction);
-            row.push(req.body.directions[i].step);
-            directions.push(row);
-        }
-
-        var connection = mysqlConfig.create();
-        connection.connect();
-        var query = connection.query('INSERT INTO study.procedures (id, direction, step) values ?', [directions],
-            function(err, results) {
-                if (err) console.log(err);
-                resolve(results);
-            });
-        connection.end();
-    });
-
-    Promise.all([promise1, promise2, promise3])
+    createRecipe(req, id)
         .then(function(resolve) {
             res.sendStatus(200)
-        })
+        });
 });
 
 router.get('/recipe/:id', function(req, res, next) {
-    var promise1 = new Promise(function(resolve, reject) {
-        var connection = mysqlConfig.create();
-        connection.connect();
-        connection.query('SELECT * FROM study.recipes where id = ?', [req.params.id],
-            function(err, rows, fields) {
-                if (err) console.log(err);
-                resolve(rows);
-                connection.end();
-            });
-    });
+      getRecipe(req.params.id)
+          .then(function(resolve) {
+              var jsonResponse = {
+                  info: resolve[0][0],
+                  ingredients: resolve[1],
+                  directions: resolve[2]
+              }
 
-    var promise2 = new Promise(function(resolve, reject) {
-        var connection = mysqlConfig.create();
-        connection.connect();
-        connection.query('SELECT ingredient, qty FROM study.ingredients where id = ?', [req.params.id],
-            function(err, rows, fields) {
-                if (err) console.log(err);
-                resolve(rows);
-                connection.end();
-            });
-    });
-
-
-    var promise3 = new Promise(function(resolve, reject) {
-        var connection = mysqlConfig.create();
-        connection.connect();
-        connection.query('SELECT * FROM study.procedures where id = ? order by step;', [req.params.id],
-            function(err, rows, fields) {
-                if (err) console.log(err);
-                resolve(rows);
-                connection.end();
-            });
-    });
-
-
-    Promise.all([promise1, promise2, promise3])
-        .then(function(resolve) {
-            var jsonResponse = {
-                info: resolve[0][0],
-                ingredients: resolve[1],
-                directions: resolve[2]
-            }
-
-            res.json(jsonResponse);
-        })
+              res.json(jsonResponse);
+          })
 });
 
 router.get('/recipes', function(req, res, next) {
