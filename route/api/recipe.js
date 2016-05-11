@@ -10,13 +10,16 @@ var createRecipe = require('../recipe/createRecipe');
 router.get('/init', function(req, res, next) {
     console.log(req.cookies.rememberme);
     console.log(uuid.v4());
-    console.log(uuid.v1());
+    console.log(uuid.v1());    
 });
 
 router.post('/recipe/new', function(req, res, next) {
     var id = uuid.v4();
     createRecipe(req, id)
         .then(function(resolve) {
+            res.json({
+              id:id
+            });
             res.sendStatus(200)
         });
 });
