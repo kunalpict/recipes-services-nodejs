@@ -27,6 +27,7 @@ router.post('/user/login', function(req, res, next) {
         },60);*/
 
         res.cookie('api-token', token, { domain: '.myrecipeforum.com'});
+        res.cookie('rememberme', '1', { expires: new Date(Date.now() + 900000), httpOnly: true });
         res.sendStatus(200);
       } else {
         res.sendStatus(403);

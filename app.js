@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var init = require('./route/api/init');
 var users = require('./route/api/user');
 var recipe = require('./route/api/recipe');
+var upload = require('./route/api/upload');
 
 //var upload = require('./route/upload-api');
 
@@ -30,7 +31,7 @@ app.use('/_generate',express.static(path.join(__dirname, '_generate')));
 app.use('/ws', init);
 app.use('/ws', users);
 app.use('/ws', recipe);
-//app.use('/api', upload);
+app.use('/ws', upload);
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
