@@ -5,7 +5,6 @@ var router = express.Router();
 var auth = require('../auth/auth');
 
 router.post('/user/login', function(req, res, next) {
-  console.log(req.decoded);
   auth.login(req.body.username, req.body.password)
     .then(function(results){
       if(results.length){

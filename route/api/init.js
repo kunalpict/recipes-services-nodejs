@@ -16,7 +16,20 @@ router.get('/', function(req, res, next) {
 
 
 router.all('*', function(req, res, next){
-	
+	console.log(req.cookies.api-token);
+	if(req.cookies.api-token){
+	jwt.verify(req.cookies.api-token, "thisistokentest", function(err, decoded) {      
+            
+            if (err) {
+              return res.json({ success: false, message: 'Failed to authenticate token.' });    
+            } else {
+              // if everything is good, save to request for use in other routes
+              req.decoded = decoded; 
+              console.log(decoded);   
+              
+            }
+          });
+	}
 	next();
 });
 
