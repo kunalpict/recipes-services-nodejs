@@ -43,7 +43,7 @@ var auth = function() {
         var promise = new Promise(function(resolve, reject) {
             var connection = mysqlConfig.create();
             connection.connect();
-            connection.query('SELECT * FROM study.user where userId = ? and pwd = ?', [username, password],
+            connection.query('SELECT firstName, lastName FROM study.user where userId = ? and pwd = ?', [username, password],
                 function(err, results) {
                     console.log(results)
                     if (err) reject(err);
