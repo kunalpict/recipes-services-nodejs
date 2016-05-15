@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
 
 
 router.all('*', function(req, res, next){
-	console.log(req.cookies.api-token);
+	
 	next();
 });
 
