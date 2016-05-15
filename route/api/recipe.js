@@ -6,6 +6,7 @@ var router = express.Router();
 var mysqlConfig = require('../config/mysqlconfig');
 var getRecipe = require('../recipe/getRecipe');
 var createRecipe = require('../recipe/createRecipe');
+var jwtUtil = require('../auth/jwt');
 /* GET home page. */
 router.get('/init', function(req, res, next) {
     console.log(req.cookies.rememberme);
@@ -13,7 +14,7 @@ router.get('/init', function(req, res, next) {
     console.log(uuid.v1());    
 });
 
-router.post('/recipe/new', function(req, res, next) {
+router.post('/recipe/new', jwtUtil.validate, function(req, res, next) {
     var id = uuid.v4();
     createRecipe(req, id)
         .then(function(resolve) {
