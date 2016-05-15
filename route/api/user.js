@@ -5,6 +5,7 @@ var router = express.Router();
 var auth = require('../auth/auth');
 
 router.post('/user/login', function(req, res, next) {
+  console.log(req.decoded);
   auth.login(req.body.username, req.body.password)
     .then(function(results){
       if(results.length){
@@ -13,20 +14,10 @@ router.post('/user/login', function(req, res, next) {
         });
         console.log(token);
         /*setTimeout(function(){
-          jwt.verify(token, "thisistokentest", function(err, decoded) {      
-            
-            if (err) {
-              return res.json({ success: false, message: 'Failed to authenticate token.' });    
-            } else {
-              // if everything is good, save to request for use in other routes
-              req.decoded = decoded; 
-              console.log(decoded);   
-              
-            }
-          });
+          
         },60);*/
 
-        res.cookie('api-token', token, { domain:'api.myrecipeforum.com',path: '/', httpOnly:true});
+        res.cookie('api-token', token, { domain:'api.myrecipeforum.com'});
         res.cookie('rememberme', '1', { expires: new Date(Date.now() + 900000), httpOnly: true });
         res.json(results[0]);
         res.sendStatus(200);

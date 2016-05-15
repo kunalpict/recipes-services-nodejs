@@ -3,6 +3,7 @@ var multer  = require('multer');
 var upload = multer({dest: './upload/'});
 var router = express.Router();
 var AWS = require('aws-sdk');
+var jwt    = require('jsonwebtoken');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -16,7 +17,17 @@ router.get('/', function(req, res, next) {
 
 router.all('*', function(req, res, next){
 	console.log(req.path);
-    next();   
+	jwt.verify(token, "thisistokentest", function(err, decoded) {      
+            
+            if (err) {
+              next();
+            } else {
+              // if everything is good, save to request for use in other routes
+              req.decoded = decoded; 
+              next();              
+            }
+          });
+       
 });
 
 module.exports = router;
