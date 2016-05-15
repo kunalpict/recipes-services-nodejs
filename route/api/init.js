@@ -17,7 +17,8 @@ router.get('/', function(req, res, next) {
 
 router.all('*', function(req, res, next){
 	console.log(req.path);
-	jwt.verify(token, "thisistokentest", function(err, decoded) {      
+	if(req.cookies.api-token) {
+	jwt.verify(req.cookies.api-token, "thisistokentest", function(err, decoded) {      
             
             if (err) {
               next();
@@ -27,6 +28,9 @@ router.all('*', function(req, res, next){
               next();              
             }
           });
+	} else {
+		next();
+	}
        
 });
 
