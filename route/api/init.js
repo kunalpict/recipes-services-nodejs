@@ -16,22 +16,8 @@ router.get('/', function(req, res, next) {
 
 
 router.all('*', function(req, res, next){
-	console.log(req.path);
-	if(req.cookies.api-token) {
-	jwt.verify(req.cookies.api-token, "thisistokentest", function(err, decoded) {      
-            
-            if (err) {
-              next();
-            } else {
-              // if everything is good, save to request for use in other routes
-              req.decoded = decoded; 
-              next();              
-            }
-          });
-	} else {
-		next();
-	}
-       
+	console.log(req.cookies.api-token);
+	next();
 });
 
 module.exports = router;
