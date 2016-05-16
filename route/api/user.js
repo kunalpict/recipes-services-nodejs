@@ -10,7 +10,7 @@ router.post('/user/login', function(req, res, next) {
     .then(function(results){
       if(results.length){
         token = jwtUtil.create(req.body.username);
-        res.cookie('api-token', token, { domain:'api.myrecipeforum.com'});
+        res.cookie('api-token', token, { domain:"api.myrecipeforum.com"});
         res.cookie('rememberme', '1', { expires: new Date(Date.now() + 900000), httpOnly: true });
         res.json(results[0]);
         res.sendStatus(200);

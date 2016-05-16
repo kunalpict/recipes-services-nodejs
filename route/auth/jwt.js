@@ -10,7 +10,7 @@ jwtUtil = function() {
 	}
 
 	function validateToken(req, res, next) {
-		console.log('coookie is:  '+ req.cookies['api-token']);
+		console.log(req.cookies);
 		jwt.verify(req.cookies['api-token'], jwtSecretKey, function(err, decoded) {      
             if (err) {
               res.sendStatus(403);	    
