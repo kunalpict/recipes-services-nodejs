@@ -16,7 +16,7 @@ router.get('/init', function(req, res, next) {
 
 router.post('/recipe/new', jwtUtil.validate, function(req, res, next) {
     var id = uuid.v4();
-    createRecipe(req, id)
+    createRecipe(req, id, req.user)
         .then(function(resolve) {
             res.json({
               id:id
