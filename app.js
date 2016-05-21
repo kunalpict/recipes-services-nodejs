@@ -8,7 +8,7 @@ var init = require('./route/api/init');
 var users = require('./route/api/user');
 var recipe = require('./route/api/recipe');
 var upload = require('./route/api/upload');
-var cors = require('cors');
+//var cors = require('cors');
 
 var Memcached = require('memcached');
 var memcached = new Memcached("recipe-memcache.zmeqg8.0001.use1.cache.amazonaws.com:11211");
@@ -42,7 +42,7 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 app.use('/static', express.static(path.join(__dirname, 'public')));
 app.use('/_generate', express.static(path.join(__dirname, '_generate')));
-app.use(cors());
+//app.use(cors());
 
 app.use('/ws', init);
 app.use('/ws', users);
