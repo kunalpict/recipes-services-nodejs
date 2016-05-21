@@ -33,20 +33,14 @@ router.get('/recipe/:id', function(req, res, next) {
         })
 });
 
+
+router.put('/recipe/:id', jwtUtil.validate, validator, function(req, res, next) {});
+
 router.get('/recipes', function(req, res, next) {
     var connection = mysqlConfig.create();
     connection.connect();
     connection.query('SELECT * FROM study.recipes', function(err, rows, fields) {
         if (err) console.log(err);
-        res.cookie('name', 'tobi', {
-            domain: 'localhost',
-            path: '/api/init',
-            secure: true
-        });
-        res.cookie('rememberme', '1', {
-            expires: new Date(Date.now() + 900000),
-            httpOnly: true
-        });
         res.json(rows);
     });
 
