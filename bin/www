@@ -6,7 +6,15 @@
 var app = require('../app');
 var debug = require('debug')('myapp:server');
 var http = require('http');
-
+var Memcached = require('memcached');
+var memcached = new Memcached("recipe-memcache.zmeqg8.0001.use1.cache.amazonaws.com:11211");
+//console.log(memcached);
+memcached.on('failure', function( details ){ sys.error( "Server " + details.server + "went down due to: " + details.messages.join( '' ) ) });
+memcached.on('reconnecting', function( details ){ sys.debug( "Total downtime caused by server " + details.server + " :" + details.totalDownTime + "ms")});
+memcached.set('foo', 'bar', 1000, function (err) { /* stuff */ });
+memcached.get('foo', function (err, data) {
+  console.log(data);
+});
 
 /**
  * Get port from environment and store in Express.
